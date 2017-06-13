@@ -110,13 +110,11 @@ public class TridentReach {
     TridentState tweetersToFollowers = topology.newStaticState(new StaticSingleKeyMapState.Factory(FOLLOWERS_DB));
 
 
-    topology.newDRPCStream("reach", drpc).stateQuery(urlToTweeters, new Fields("args"), new MapGet(), new Fields("tweeters"))
-    		.each(new Fields("tweeters"), new ExpandList(), new Fields("tweeter")).shuffle()
-    		.stateQuery(tweetersToFollowers, new Fields("tweeter"), new MapGet(), new Fields("followers"))
-    		.each(new Fields("followers"),new ExpandList(), new Fields("follower"))
-    		.groupBy(new Fields("follower"))
-    		.aggregate(new One(), new Fields("one"))
-    		.aggregate(new Fields("one"), new Sum(), new Fields("reach"));
+    topology.newDRPCStream("reach", drpc).stateQuery(urlToTweeters, new Fields("args"), new MapGet(), new Fields(
+        "tweeters")).each(new Fields("tweeters"), new ExpandList(), new Fields("tweeter")).shuffle().stateQuery(
+        tweetersToFollowers, new Fields("tweeter"), new MapGet(), new Fields("followers")).each(new Fields("followers"),
+        new ExpandList(), new Fields("follower")).groupBy(new Fields("follower")).aggregate(new One(), new Fields(
+        "one")).aggregate(new Fields("one"), new Sum(), new Fields("reach"));
     return topology.build();
   }
 
