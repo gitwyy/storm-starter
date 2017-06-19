@@ -34,7 +34,7 @@ public class OrderDrpc {
 		cdlStreamPan.each(new Fields("args"), new FilterNull())
 				.each(new Fields("args"), new TridentUtility.PrintFun(), new Fields("line")).shuffle().parallelismHint(4)
 				.each(new Fields("line"), new TridentUtility.SplitTrans(), new Fields("id", "orderStatus", "amount", "customerNo", "issuer", "cardType", "transType", "createTime", "externalId"))
-				.each(new Fields("customerNo", "amount"), new OrderUtility.cusNoAmountFunction(), new Fields("customer_amount"));
+				.shuffle().each(new Fields("customerNo", "amount"), new OrderUtility.cusNoAmountFunction(), new Fields("customer_amount"));
 
 		cdlStreamCus.each(new Fields("args"), new FilterNull())
 				.each(new Fields("args"), new TridentUtility.PrintFun(), new Fields("line")).shuffle().parallelismHint(4)
@@ -64,6 +64,7 @@ public class OrderDrpc {
 			for (int i = 0; i < 100; i++) {
 
 				String line = reader.readLine();
+				funcI(localDrpc, line);
 				funcI(localDrpc, null);
 				//funcII(localDrpc, null);
 			}
